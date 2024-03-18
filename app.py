@@ -5,7 +5,7 @@ from flask_cors import CORS
 from flask_marshmallow import Marshmallow
 from flask_bcrypt import Bcrypt
 from flask import abort
-from db_config import DB_CONFIG
+from .db_config import DB_CONFIG
 
 app = Flask(__name__)
 
@@ -15,7 +15,7 @@ ma = Marshmallow(app)
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 
-from model.user import User, user_schema, UserRole
+from .model.user import User, user_schema, UserRole
 
 @app.route('/register', methods=['POST'])
 def register():
