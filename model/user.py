@@ -1,4 +1,4 @@
-from app import db, ma, bcrypt
+from ..app import db, ma, bcrypt
 from enum import Enum
 
 '''
@@ -10,7 +10,7 @@ Role (Vendor, End User, Admin)
 LanguagePreference
 '''
 
-class UserRole(Enum):
+class UserRole(str, Enum):
     VENDOR = "Vendor"
     END_USER = "End User"
     ADMIN = "Admin"
@@ -28,7 +28,7 @@ class User(db.Model):
     language_preference = db.Column(db.Enum(LanguagePreference))
 
     def __init__(self, username, password, email, role):
-        super(User, self).__init__(username=username, email=email, role=role)
+        super(User, self).__init__(username=username, email=email, role=UserRole(role).name)
         self.hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
 class UserSchema(ma.Schema):
