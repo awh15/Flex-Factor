@@ -1,6 +1,7 @@
 import datetime
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import or_
 from flask_cors import CORS
 from flask_marshmallow import Marshmallow
 from flask_bcrypt import Bcrypt
@@ -16,6 +17,8 @@ db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 
 from .model.user import User, user_schema, UserRole
+from .model.profile import Profile, profile_schema
+from .model.product import Product, products_schema
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -38,6 +41,10 @@ def register():
     u = User(username, password, email, role)
 
     db.session.add(u)
+    db.session.commit()
+    
+    p = Profile(u.user_id, "", "", "")
+    db.session.add(p)
     db.session.commit()
 
     return jsonify(user_schema.dump(u)), 201
@@ -65,10 +72,43 @@ def login():
         return jsonify({"Message": "Admin Login Successful"}), 200
     
     elif user.role == UserRole.END_USER:
-        jsonify({"Message": "User Login Successful"}), 200
+        return jsonify({"Message": "User Login Successful"}), 200
 
     elif user.role == UserRole.VENDOR:
-        jsonify({"Message": "Vendo Login Successful"}), 200
+        return jsonify({"Message": "Vendo Login Successful"}), 200
 
     return abort(409, "Something went wrong")
 
+@app.route("/profile", methods=["POST"])
+def profile():
+    if "username" not in request.json:
+        abort(400, "Include username in request")
+    u = User.query.filter_by(username=request.json["username"]).first()
+    if not u:
+        abort(400, "Username not found")
+    p = Profile.query.filter_by(user_id=u.user_id).first()
+    return jsonify(profile_schema.dump(p))
+
+
+@app.route("/update_profile", methods=["POST"])
+def update_profile():
+    if "username" not in request.json:
+        abort(400, "Include username in request")
+    u = User.query.filter_by(username=request.json["username"]).first()
+    if not u:
+        abort(400, "Username not found")
+    p = Profile.query.filter_by(user_id=u.user_id).first()
+    if "full_name" in request.json: p.full_name = request.json["full_name"]
+    if "address" in request.json: p.address = request.json["address"]
+    if "phone_number" in request.json: p.phone_number = request.json["phone_number"]
+    db.session.commit()
+    return jsonify(profile_schema.dump(p))
+
+    
+@app.route("/search", methods=["POST"])
+def search():
+    if "search" not in request.json:
+        abort(400, "No search request")
+    s = Product.query.filter(or_(Product.name.ilike(request.json["search"]),
+                                 Product.description.ilike(request.json["search"]))).all()
+    return jsonify(products_schema.dump(s))

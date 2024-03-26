@@ -41,3 +41,4 @@ class ProductSchema(ma.Schema):
         model = Product
 
 product_schema = ProductSchema()
+products_schema = ProductSchema(many=True)
