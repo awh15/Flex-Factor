@@ -1,5 +1,5 @@
 from ..app import db, ma, bcrypt
-import datetime
+from datetime import datetime
 
 '''
 ReviewID (Primary Key)

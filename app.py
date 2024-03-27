@@ -16,6 +16,8 @@ db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 
 from .model.user import User, user_schema, UserRole
+from .model.product import Product, product_schema
+from .model.review import Review, review_schema
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -72,3 +74,98 @@ def login():
 
     return abort(409, "Something went wrong")
 
+@app.route('/addproduct', methods=['POST'])
+def add_product():
+    vendor_id = request.json["vendor_id"]
+    description = request.json["description"]
+    price = request.json["price"]
+    stock = request.json["stock"]
+    category = request.json["category"]
+    image = request.json["image"]
+
+    if not (vendor_id and description and price and stock and category and image):
+        return
+    
+    # Check if profile is a vendor
+    v = User.query.filter_by(user_id=vendor_id).first()
+
+    if not v or v.role != UserRole.VENDOR:
+        abort(403)
+    
+    p = Product(vendor_id, v.username, description, price, stock, category, image, 0)
+
+    db.session.add(p)
+    db.session.commit()
+
+    return jsonify(product_schema.dump(p)), 201
+
+
+@app.route('/deleteproduct', methods=['POST'])
+def delete_product():
+    product_id = request.json["product_id"]
+
+    if not product_id:
+        abort(403)
+        
+    Review.query.filter_by(product_id=product_id).delete()
+    Product.query.filter_by(product_id=product_id).delete()
+
+    db.session.commit()
+
+    return {"Message": "Delete Successful"}, 200
+
+@app.route('/changeproduct', methods=['POST'])
+def change_product():
+    product_id = request.json["product_id"]
+    description = request.json["description"]
+    price = request.json["price"]
+    stock = request.json["stock"]
+    category = request.json["category"]
+    image = request.json["image"]
+    rating = request.json["rating"]
+
+    if not product_id:
+        abort(403)
+
+    p = Product.query.filter_by(product_id=product_id).first()
+
+    if not p:
+        abort(403)
+
+    # Change information
+    if description: p.description = description
+    if price: p.price = price
+    if stock: p.stock = stock
+    if category: p.category = category
+    if image: p.image = image
+
+    # Update Rating by calculating all reviews with that product id
+    r = Review.query.filter_by(product_id=product_id).all()
+
+    if rating>=0 and len(r) > 0:
+        n = len(r) + 1          # To account for the new rating as well
+        s = 0
+        for i in r:
+            s += i.rating/n
+        s+=rating/n
+
+        p.rating = s
+
+    elif rating>=0 and len(r) == 0:
+        p.rating = rating
+
+    db.session.commit()
+
+    return jsonify(product_schema.dump(p)), 200
+
+@app.route('/product', methods=['POST'])
+def get_product():
+    # Product ID
+    product = request.json["product_id"]
+
+    if not product:
+        abort(403)
+
+    p = Product.query.filter_by(product_id=product).first()
+
+    return jsonify(product_schema.dump(p))
