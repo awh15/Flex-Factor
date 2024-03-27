@@ -2,3 +2,8 @@
 /model/__pycache__
 /venv
 db_config.py
+<<<<<<< HEAD
+comments.txt
+=======
+secret_key.py
+>>>>>>> b0f2f534a6c71a9b74de04025e028860db8dbcbc
