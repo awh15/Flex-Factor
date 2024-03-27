@@ -237,19 +237,29 @@ def get_product():
 
 @app.route("/wishlist/<int:product_id>", methods=["POST"])
 def add_to_wishlist():
-    existing_item = Wishlist.query.filter_by(user_id=request.json["user_id"], product_id=product_id).first()
+    token = extract_auth_token(request)
+    try:
+        user_id = decode_token(token)
+    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
+        abort(403)
+    existing_item = Wishlist.query.filter_by(user_id=user_id, product_id=product_id).first()
     if existing_item:
         return jsonify({'message': 'This item is already in your wishlist.'}), 400
     
-    wish = Wishlist(user_id=request.json["user_id"], product_id=product_id)
+    wish = Wishlist(user_id=user_id, product_id=product_id)
     db.session.add(wish)
     db.session.commit()
 
-    return jsonify({'message': 'Item added to wishlist successfully.'})
+    return jsonify({'message': 'Product added to wishlist successfully.'})
 
 @app.route("/wishlist", methods=["GET"])
 def get_wishlist():
-    items = Wishlist.query.filter_by(user_id=request.json["user_id"])
+    token = extract_auth_token(request)
+    try:
+        user_id = decode_token(token)
+    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
+        abort(403)
+    items = Wishlist.query.filter_by(user_id=user_id)
 
     wl = [item.product_id for item in items]
 
