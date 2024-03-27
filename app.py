@@ -26,8 +26,11 @@ def register():
     password = request.json["password"]
     role = request.json["role"]
     email = request.json["email"]
+    name = request.json["full_name"]
+    address = request.json["address"]
+    phone_number = request.json["phone_number"]
 
-    if not (username and password and role and email):
+    if not (username and password and role and email and name and address and phone_number):
         return jsonify({"Message": "Please fill all missing fields"}), 400
     
     username_exists = User.query.filter_by(username=username).all()
@@ -43,7 +46,7 @@ def register():
     db.session.add(u)
     db.session.commit()
     
-    p = Profile(u.user_id, "", "", "")
+    p = Profile(u.user_id, name, address, phone_number)
     db.session.add(p)
     db.session.commit()
 
