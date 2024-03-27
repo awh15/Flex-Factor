@@ -23,4 +23,4 @@ class WishlistSchema(ma.Schema):
         fields = ("wishlist_id", "user_id", "product_id")
         model = Wishlist
 
-wishlist_schema = WishlistSchema()
+wishlist_schema = WishlistSchema(many=True)

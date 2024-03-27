@@ -21,7 +21,8 @@ bcrypt = Bcrypt(app)
 from .model.user import User, user_schema, UserRole
 from .model.profile import Profile, profile_schema
 from .model.product import Product, products_schema, product_schema
-from .model.review import Review, review_schema
+from .model.review import Review
+from .model.wishlist import Wishlist, wishlist_schema
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -130,6 +131,17 @@ def update_profile():
     db.session.commit()
     return jsonify(profile_schema.dump(p))
 
+
+@app.route("/get_role", methods=["GET"])
+def get_role():
+    token = extract_auth_token(request)
+    try:
+        user_id = decode_token(token)
+    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
+        abort(403)
+    u = User.query.filter_by(user_id=user_id).first()
+    return jsonify({"role": u.role})
+
     
 @app.route("/search", methods=["POST"])
 def search():
@@ -235,18 +247,20 @@ def get_product():
 
     return jsonify(product_schema.dump(p))
 
-@app.route("/wishlist/<int:product_id>", methods=["POST"])
+@app.route("/add_wishlist", methods=["POST"])
 def add_to_wishlist():
     token = extract_auth_token(request)
     try:
         user_id = decode_token(token)
     except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
         abort(403)
-    existing_item = Wishlist.query.filter_by(user_id=user_id, product_id=product_id).first()
+    if "product_id" not in request.json:
+        abort(400, "Missing product id")
+    existing_item = Wishlist.query.filter_by(user_id=user_id, product_id=request.json["product_id"]).first()
     if existing_item:
         return jsonify({'message': 'This item is already in your wishlist.'}), 400
     
-    wish = Wishlist(user_id=user_id, product_id=product_id)
+    wish = Wishlist(user_id=user_id, product_id=request.json["product_id"])
     db.session.add(wish)
     db.session.commit()
 
@@ -259,8 +273,6 @@ def get_wishlist():
         user_id = decode_token(token)
     except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
         abort(403)
-    items = Wishlist.query.filter_by(user_id=user_id)
+    items = Wishlist.query.filter_by(user_id=user_id).all()
 
-    wl = [item.product_id for item in items]
-
-    return jsonify(wl)
+    return jsonify(wishlist_schema.dump(items))
