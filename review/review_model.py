@@ -1,4 +1,4 @@
-from ..app import db, ma, bcrypt
+from .review_app import db, ma, bcrypt
 from datetime import datetime
 
 '''

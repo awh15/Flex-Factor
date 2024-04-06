@@ -1,4 +1,4 @@
-from ..app import db, ma, bcrypt
+from .product_app import db, ma
 
 '''
 FAQID (Primary Key)

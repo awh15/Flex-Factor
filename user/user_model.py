@@ -1,4 +1,4 @@
-from ..app import db, ma, bcrypt
+from .user_app import db, ma, bcrypt
 from enum import Enum
 
 '''

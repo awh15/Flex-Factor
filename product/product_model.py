@@ -1,4 +1,4 @@
-from ..app import db, ma, bcrypt
+from .product_app import db, ma
 
 '''
 ProductID (Primary Key)
@@ -14,7 +14,7 @@ Rating
 
 class Product(db.Model):
     product_id = db.Column(db.Integer, primary_key=True)
-    vendor_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    vendor_id = db.Column(db.Integer, nullable=False)
     name = db.Column(db.String(50))
     description = db.Column(db.Text)
     price = db.Column(db.Numeric(10, 2))

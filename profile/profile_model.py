@@ -1,5 +1,4 @@
-from ..app import db, ma, bcrypt
-from enum import Enum
+from .profile_app import db, ma
 
 '''
 ProfileID (Primary Key)
@@ -11,7 +10,7 @@ PhoneNumber
 
 class Profile(db.Model):
     profile_id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), unique=True)
+    user_id = db.Column(db.Integer, unique=True)
     full_name = db.Column(db.String(50))
     address = db.Column(db.String(100))
     phone_number = db.Column(db.String(20))
@@ -28,3 +27,4 @@ class ProfileSchema(ma.Schema):
         model = Profile
 
 profile_schema = ProfileSchema()
+

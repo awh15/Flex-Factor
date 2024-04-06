@@ -1,4 +1,4 @@
-from ..app import db, ma, bcrypt
+from .wishlist_app import db, ma
 
 '''
 WishlistID (Primary Key)
