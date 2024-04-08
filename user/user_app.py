@@ -1,7 +1,6 @@
 import datetime
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import or_
 from flask_cors import CORS
 from flask_marshmallow import Marshmallow
 from flask_bcrypt import Bcrypt
@@ -61,7 +60,7 @@ def register():
 
     response = requests.post(profile_app_url+'create_profile', json=create_profile_payload)
 
-    if response == 201:
+    if response.status_code == 201:
         return jsonify(user_schema.dump(u)), 201
     else:
         abort(400)
@@ -116,14 +115,15 @@ def login():
 
 @app.route("/get_role", methods=["GET"])
 def get_role():
-    token = extract_auth_token(request)
-    try:
-        user_id = decode_token(token)
-    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
-        abort(403)
+    user_id = request.json["id"]
+    
     u = User.query.filter_by(user_id=user_id).first()
+
+    if not u:
+        abort(400)
+        
     return jsonify({"role": u.role.value})
 
 
-if __name__ == '__main__':
+with app.app_context():
     db.create_all()

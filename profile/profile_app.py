@@ -1,7 +1,6 @@
 import datetime
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import or_
 from flask_cors import CORS
 from flask_marshmallow import Marshmallow
 from flask_bcrypt import Bcrypt
@@ -20,6 +19,7 @@ db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 
 from .profile_model import Profile, profile_schema
+
 
 def decode_token(token):
     payload = jwt.decode(token, SECRET_KEY, 'HS256')
@@ -62,14 +62,13 @@ def update_profile():
 
 @app.route("/get_profile", methods=["GET"])
 def get_profile():
-    token = extract_auth_token(request)
-    try:
-        user_id = decode_token(token)
-    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
-        abort(403)
+    user_id = request.json["id"]
+
     p = Profile.query.filter_by(user_id=user_id).first()
+    
     if not p:
         abort(403)
+    
     return jsonify(profile_schema.dump(p))
 
 with app.app_context():

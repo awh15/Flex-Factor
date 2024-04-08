@@ -23,8 +23,6 @@ class Product(db.Model):
     image_url = db.Column(db.String(100))
     rating = db.Column(db.Float)
 
-    vendor = db.relationship('User', backref=db.backref('products', lazy=True))
-
     def __init__(self, vendor_id, name, description, price, stock_quantity, category, image_url, rating):
         self.vendor_id = vendor_id
         self.name = name

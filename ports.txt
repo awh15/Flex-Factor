@@ -1,0 +1,7 @@
+user        5001
+profile     5050
+product     5100
+payment     5150
+review      5200
+wishlist    5250
+order       5300

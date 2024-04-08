@@ -21,6 +21,8 @@ bcrypt = Bcrypt(app)
 
 from .review_model import Review, review_schema
 
+user_app_url = "http://localhost:5001/"
+
 def extract_auth_token(authenticated_request):
     auth_header = authenticated_request.headers.get('Authorization')
     if auth_header:
@@ -46,13 +48,19 @@ def create_token(user_id):
         algorithm='HS256'
     )
 
-@app.route('/add_review', methods=['POST'])
+@app.route('/add', methods=['POST'])
 def add_review():
     token = extract_auth_token(request)
     try:
         user_id = decode_token(token)
     except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
         abort(403)
+
+    # Only End Users can add reviews
+    u = requests.get(user_app_url+'get_role', json={'id':user_id})
+
+    if u.status_code == 400 or u.json()["role"] != "End User":
+        abort(400)
 
     product_id = request.json["product_id"]
     comment = request.json["comment"]
@@ -63,6 +71,7 @@ def add_review():
     db.session.add(r)
     db.session.commit()
 
+    return jsonify(review_schema.dump(r))
 
 @app.route('/delete_review', methods=['POST'])
 def delete_review():
@@ -77,10 +86,14 @@ def delete_review():
     rating = request.json["rating"]
     date = request.json["date"]
 
-    Review.query.filter_by(product_id=product_id, comment=comment, rating=rating, review_date=date).first().delete()
+    Review.query.filter_by(product_id=product_id, comment=comment, rating=rating, review_date=date).delete()
+    
+    db.session.commit()
+    
+    return {"message": "deleted"}, 200
 
 
-@app.route('/get_product_reviews', methods=['GET'])
+@app.route('/reviews', methods=['GET'])
 def get_product_reviews():
     product_id = request.json["product_id"]
 
@@ -90,9 +103,13 @@ def get_product_reviews():
 @app.route('/delete_product_reviews', methods=['POST'])
 def delete_product_reviews():
     product_id = request.json["product_id"]
+    
     Review.query.filter_by(product_id=product_id).delete()
-    return 
+    
+    db.session.commit()
+    
+    return {"Message": "deleted product reviews"}, 200
 
 
-if __name__ == '__main__':
+with app.app_context():
     db.create_all()

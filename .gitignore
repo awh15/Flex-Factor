@@ -4,4 +4,5 @@
 db_config.py
 comments.txt
 secret_key.py
-ports.txt
+kill.sh
+start.sh

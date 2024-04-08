@@ -12,20 +12,18 @@ ReviewDate
 
 class Review(db.Model):
     review_id = db.Column(db.Integer, primary_key=True)
-    product_id = db.Column(db.Integer, db.ForeignKey('product.product_id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    product_id = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.Integer, nullable=False)
     rating = db.Column(db.Integer)
     comment = db.Column(db.Text)
     review_date = db.Column(db.DateTime, default=datetime.utcnow)
 
-    product = db.relationship('Product', backref=db.backref('reviews', lazy=True))
-    user = db.relationship('User', backref=db.backref('reviews', lazy=True))
-
-    def __init__(self, product_id, user_id, rating, comment):
+    def __init__(self, product_id, user_id, rating, comment, date):
         self.product_id = product_id
         self.user_id = user_id
         self.rating = rating
         self.comment = comment
+        self.review_date = date
 
 class ReviewSchema(ma.Schema):
     class Meta:
