@@ -1,5 +1,10 @@
 /__pycache__
 /model/__pycache__
+/product/__pycache__
+/profile/__pycache__
+/review/__pycache__
+/user/__pycache__
+/wishlist/__pycache__
 /venv
 db_config.py
 comments.txt
