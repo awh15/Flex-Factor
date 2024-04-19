@@ -13,7 +13,7 @@ import requests
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = DB_CONFIG
+app.config['SQLALCHEMY_DATABASE_URI'] = DB_CONFIG+'order'
 CORS(app)
 ma = Marshmallow(app)
 db = SQLAlchemy(app)
@@ -67,7 +67,7 @@ def place_order():
     
 
 
-@app.route('/cancel', mehtods=['POST'])
+@app.route('/cancel', methods=['POST'])
 def cancel_order():
     pass
 
@@ -77,3 +77,5 @@ def get_order():
     pass
 
 
+with app.app_context():
+    db.create_all()

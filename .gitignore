@@ -1,5 +1,7 @@
 /__pycache__
 /model/__pycache__
+/order/__pycache__
+/payment/__pycache__
 /product/__pycache__
 /profile/__pycache__
 /review/__pycache__

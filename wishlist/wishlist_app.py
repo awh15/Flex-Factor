@@ -13,7 +13,7 @@ import requests
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = DB_CONFIG
+app.config['SQLALCHEMY_DATABASE_URI'] = DB_CONFIG+'wishlist'
 CORS(app)
 ma = Marshmallow(app)
 db = SQLAlchemy(app)

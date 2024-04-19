@@ -1,10 +1,12 @@
 from .order_app import db, ma
 import datetime
+import json
 from enum import Enum
 
 '''
 OrderID (Primary Key)
-UserID (Foreign Key)
+UserID
+ProductIDS
 TotalPrice
 Status (Processing, Shipped, Delivered)
 OrderDate
@@ -18,13 +20,11 @@ class OrderStatus(str, Enum):
 
 class Order(db.Model):
     order_id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    user_id = db.Column(db.Integer, nullable=False)
     total_price = db.Column(db.Numeric(10, 2))
     status = db.Column(db.String(20))
-    order_date = db.Column(db.DateTime, default=datetime.utcnow)
+    order_date = db.Column(db.DateTime, default=datetime.datetime.utcnow())
     delivery_date = db.Column(db.DateTime)
-
-    user = db.relationship('User', backref=db.backref('orders', lazy=True))
 
     def __init__(self, user_id, total_price, delivery_date):
         self.user_id = user_id
