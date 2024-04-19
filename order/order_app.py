@@ -19,7 +19,7 @@ ma = Marshmallow(app)
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 
-from .order_model import Order, order_schema
+from .order_model import Order, order_schema, orders_schema
 from .orderDetail_model import OrderDetail, order_detail_schema
 
 product_app_url = 'http://localhost:5100/'
@@ -74,7 +74,14 @@ def cancel_order():
 
 @app.route('/order', methods=['GET'])
 def get_order():
-    pass
+    token = extract_auth_token(request)
+    try:
+        user_id = decode_token(token)
+    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
+        abort(403)
+    
+    o = Order.query.filter_by(user_id=user_id).all()
+    return jsonify(orders_schema.dump(o))
 
 
 with app.app_context():

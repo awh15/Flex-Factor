@@ -38,3 +38,4 @@ class OrderSchema(ma.Schema):
         model = Order
 
 order_schema = OrderSchema()
+orders_schema = OrderSchema(many=True)
