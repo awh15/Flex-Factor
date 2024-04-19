@@ -1,4 +1,4 @@
-from ...app import db, ma, bcrypt
+from .order_app import db, ma
 
 '''
 OrderDetailID (Primary Key)

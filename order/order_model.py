@@ -1,6 +1,6 @@
-from ...app import db, ma, bcrypt
-from enum import Enum
+from .order_app import db, ma
 import datetime
+from enum import Enum
 
 '''
 OrderID (Primary Key)
@@ -10,6 +10,11 @@ Status (Processing, Shipped, Delivered)
 OrderDate
 DeliveryDate
 '''
+
+class OrderStatus(str, Enum):
+    CONFIRMED = 'Confirmed'
+    RECEIEVED = 'Received'
+    SHIPPED = 'Shipped'
 
 class Order(db.Model):
     order_id = db.Column(db.Integer, primary_key=True)
@@ -21,10 +26,10 @@ class Order(db.Model):
 
     user = db.relationship('User', backref=db.backref('orders', lazy=True))
 
-    def __init__(self, user_id, total_price, status, delivery_date):
+    def __init__(self, user_id, total_price, delivery_date):
         self.user_id = user_id
         self.total_price = total_price
-        self.status = status
+        self.status = OrderStatus.CONFIRMED
         self.delivery_date = delivery_date
 
 class OrderSchema(ma.Schema):
