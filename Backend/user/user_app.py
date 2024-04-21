@@ -114,9 +114,7 @@ def login():
 
 
 @app.route("/get_role", methods=["GET"])
-def get_role(): 
-    user_id = None 
-     
+def get_role():  
     token = extract_auth_token(request)
     try:
         user_id = decode_token(token)

@@ -1,12 +1,23 @@
 import React from 'react';
+import AddProductForm from './AddProductForm';
+import {useSelector} from 'react-redux';
+import { UserRole } from '../../constants/Constants';
+import VendorProducts from './VendorProducts';
 
 
 const Dashboard = () => {
+  const { token, role } = useSelector(state => state.login);
+
+  if(!token || role !== UserRole.VENDOR){
+    return <h1 style={{marginTop: "100px"}}>Unauthorized, you are not a VENDOR</h1>
+  }
+
     return (
-      <div className="widget" style={{ marginTop: '100px' }}>
-        <h2>Dashboard Widget</h2>
-        <p>This is the Dashboard widget content.</p>
+      <div>
+        <AddProductForm token={token} />
+        <VendorProducts token={token} />
       </div>
+      
     );
   }
 

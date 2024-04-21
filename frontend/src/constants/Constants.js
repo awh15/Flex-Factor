@@ -5,7 +5,7 @@ export const USER_BASE_URL = "http://127.0.0.1:5001/";
 // export const PROFILE_BASE_URL = "http://127.0.0.1:5050/"
 // export const ORDER_BASE_URL = "http://127.0.0.1:5300/"
 
-export const PRODUCT_BASE_URL = "http://localhost:3000/";
+export const PRODUCT_BASE_URL = "http://127.0.0.1:5100/";
 
 export const UserRole = {
     END_USER: 'End User',
