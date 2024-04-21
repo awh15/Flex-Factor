@@ -8,23 +8,14 @@ import { UserRole } from '../../constants/Constants';
 
 const Navbar = () => {
   const dispatch = useDispatch();
-  const { isAuthenticated, token } = useSelector(state => state.login);
-  const [userRole, setUserRole] = useState(UserRole.END_USER);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      if (token && isAuthenticated) {
-        const role = await dispatch(getRole());
-        if (role !== UserRole.END_USER) {
-          setUserRole(role);
-        }
-      }
-    };
+  const { isAuthenticated, token, role } = useSelector(state => state.login);
   
-    fetchData(); // Call the async function immediately
-  
-  }, [token, dispatch]);
-  
+  useEffect(()=>{
+    if(!token){
+      return; 
+    }
+    dispatch(getRole());
+  },[token, role]);
 
   return (
     <nav className="navbar">
@@ -33,11 +24,28 @@ const Navbar = () => {
       </div>
       <div className="navbar__right">
         {isAuthenticated ? (
-          <button className="navbar__button" onClick={()=>{dispatch(logout())}}>Logout</button>
+          <>
+            {role === UserRole.END_USER && (
+              <>
+                <Link to="/profile" className="navbar__item">Profile</Link>
+              </>
+            )}
+            {role === UserRole.VENDOR && (
+              <>
+                <Link to="/dashboard" className="navbar__item">Dashboard</Link>
+              </>
+            )}
+            {role === UserRole.ADMIN && (
+              <> 
+                <Link to="/analytics" className="navbar__item">Analytics</Link>
+              </>
+            )}
+            <button className="navbar__button" onClick={()=>{dispatch(logout())}}>Logout</button>
+          </>
         ) : (
           <>
-            <Link to="/login" className="navbar__button">Login</Link>
-            <Link to="/signup" className="navbar__button" >Sign Up</Link>
+            <Link to="/login" className="navbar__item">Login</Link>
+            <Link to="/signup" className="navbar__button">Sign Up</Link>
           </>
         )}
       </div>
