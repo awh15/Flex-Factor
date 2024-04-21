@@ -5,8 +5,8 @@ from flask_cors import CORS
 from flask_marshmallow import Marshmallow
 from flask_bcrypt import Bcrypt
 from flask import abort
-from db_config import DB_CONFIG
-from secret_key import SECRET_KEY
+from ..db_config import DB_CONFIG
+from ..secret_key import SECRET_KEY
 import jwt
 import requests
 
@@ -127,3 +127,6 @@ def get_role():
 
 with app.app_context():
     db.create_all()
+
+if __name__ == "__main__":
+    app.run()

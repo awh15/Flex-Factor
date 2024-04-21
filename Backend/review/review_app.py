@@ -6,8 +6,8 @@ from flask_cors import CORS
 from flask_marshmallow import Marshmallow
 from flask_bcrypt import Bcrypt
 from flask import abort
-from db_config import DB_CONFIG
-from secret_key import SECRET_KEY
+from ..db_config import DB_CONFIG
+from ..secret_key import SECRET_KEY
 import jwt
 import requests
 

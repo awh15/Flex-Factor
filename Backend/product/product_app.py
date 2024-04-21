@@ -6,14 +6,14 @@ from flask_cors import CORS
 from flask_marshmallow import Marshmallow
 from flask_bcrypt import Bcrypt
 from flask import abort
-from db_config import DB_CONFIG
-from secret_key import SECRET_KEY
+from ..db_config import DB_CONFIG
+from ..secret_key import SECRET_KEY
 import jwt
 import requests
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = DB_CONFIG
+app.config['SQLALCHEMY_DATABASE_URI'] = DB_CONFIG+"product"
 CORS(app)
 ma = Marshmallow(app)
 db = SQLAlchemy(app)
