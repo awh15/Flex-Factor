@@ -115,14 +115,22 @@ def login():
 
 @app.route("/get_role", methods=["GET"])
 def get_role():
-    user_id = request.json["id"]
+    if "id" in request.json:
+        id = request.json["id"]
+    
+    else:
+        token = extract_auth_token(request)
+        try:
+            user_id = decode_token(token)
+        except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
+            abort(403)
     
     u = User.query.filter_by(user_id=user_id).first()
 
     if not u:
-        abort(400)
+        abort(404)
         
-    return jsonify({"role": u.role.value})
+    return jsonify({"role": u.role.value}), 200
 
 
 with app.app_context():
