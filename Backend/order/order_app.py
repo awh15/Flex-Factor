@@ -75,6 +75,14 @@ def place_order():
     # Get the price
     price = response["price"]
 
+    # Check for discount
+    if "discount_code" in request.json:
+        code=request.json["discount_code"]
+        if isinstance(code, str) and code.isalnum() and len(code)==8:
+            coupon = Coupon.query.filter_by(code=code).first()
+            if coupon and coupon.expiry_date >= datetime.now() and coupon.usage_limit:
+                price=price*(1-coupon.percentage/100)
+
     # Update product details
     response = requests.get(product_app_url+'order_product', json={"id":product_id, "quantity": quantity})
 
@@ -170,16 +178,16 @@ def coupon_validity():
     if not "code" in request.json :
         return {"Message": "Invalid request"}, 400
     code = request.json["code"]
-    if not(isinstance(code, str) and code.isalnum()):
+    if not(isinstance(code, str) and code.isalnum() and len(code)==8):
         return {"Message": "Invalid request"}, 400
 
     code=code.upper()
 
     coupon = Coupon.query.filter_by(code=code).first()
     if coupon and coupon.expiry_date >= datetime.now() and coupon.usage_limit:
-        return {"validity":"valid"}
+        return {"validity":"valid", "discount_percentage":coupon.discount_percentage}
     else:
-        return {"validity":"invalid"}
+        return {"validity":"invalid", "discount_percentage":0}
 
         
 with app.app_context():
