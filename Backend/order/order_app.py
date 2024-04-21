@@ -136,7 +136,7 @@ def generate_coupon():
 
     if u.status_code == 400 or u.json()["role"] != "Admin":
         abort(400)
-    
+
     if not("discount_percentage" in request.json and "expiry_date" in request.json and "usage_limit" in request.json):
         return {"Message": "Invalid request"}, 400
 
@@ -165,5 +165,22 @@ def generate_coupon():
 
     return {"code":rand_code}
 
+@app.route("/coupon_validity", methods=['POST'])
+def coupon_validity():
+    if not "code" in request.json :
+        return {"Message": "Invalid request"}, 400
+    code = request.json["code"]
+    if not(isinstance(code, str) and code.isalnum()):
+        return {"Message": "Invalid request"}, 400
+
+    code=code.upper()
+
+    coupon = Coupon.query.filter_by(code=code).first()
+    if coupon and coupon.expiry_date >= datetime.now() and coupon.usage_limit:
+        return {"validity":"valid"}
+    else:
+        return {"validity":"invalid"}
+
+        
 with app.app_context():
     db.create_all()
