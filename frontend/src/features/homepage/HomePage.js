@@ -17,8 +17,8 @@ const HomePage = () => {
   }, [dispatch]);
 
   return (
-    <Container style={{ marginTop: '150px', display: 'flex', justifyContent: 'center' }}>
-      <Box width="80%">
+    <Container style={{ marginTop: '100px', display: 'flex', justifyContent: 'center' }}>
+      <Box width="80%" style={{paddingBottom: "20px"}}>
         <Typography variant="h3" style={{ marginTop: "20px", marginBottom: "40px", fontWeight: "bold" }} gutterBottom>
           All Products
         </Typography>

@@ -7,7 +7,7 @@
 /Backend/review/__pycache__
 /Backend/user/__pycache__
 /Backend/wishlist/__pycache__
-/Backend/venv
+/Backend/venv/
 /Backend/db_config.py
 /Backend/comments.txt
 /Backend/secret_key.py
