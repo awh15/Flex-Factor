@@ -61,7 +61,7 @@ def search():
     return jsonify(products_schema.dump(s))
 
 
-@app.route('/add', methods=['POST'])
+@app.route('/add', methods=["POST"])
 def add_product():
     if not ("name" in request.json and
             "description" in request.json and
@@ -200,7 +200,7 @@ def get_product():
     return jsonify(product_schema.dump(p))
 
 
-@app.route('/products', methods='GET')
+@app.route('/products', methods=['GET'])
 def fetch_all_products():
     p = Product.query.all()
 
