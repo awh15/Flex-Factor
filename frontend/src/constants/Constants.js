@@ -7,3 +7,8 @@ export const USER_BASE_URL = "http://127.0.0.1:5001/";
 
 export const PRODUCT_BASE_URL = "http://localhost:3000/";
 
+export const UserRole = {
+    END_USER: 'End User',
+    VENDOR: 'Vendor',
+    ADMIN: 'Admin'
+};

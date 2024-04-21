@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { USER_BASE_URL} from '../../constants/Constants';
-
+import { UserRole } from '../../constants/Constants';
 
 // Async thunk to handle logging in
 export const login = createAsyncThunk(
@@ -45,7 +45,14 @@ export const getRole = createAsyncThunk(
       }
     };
     const response = await axios.get(`${USER_BASE_URL}/get_role`, config);
-    return response.data.role; // Assuming the response contains the user's role
+    const role = response.data.role;
+    if(role === "End User"){
+      return UserRole.END_USER;
+    }else if(role === "Admin"){
+      return UserRole.ADMIN;
+    }else{
+      return UserRole.VENDOR;
+    } 
   }
 );
 

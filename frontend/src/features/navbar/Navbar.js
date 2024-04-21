@@ -1,13 +1,30 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import './Navbar.css'; // Importing the CSS file
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
-import { logout } from '../login/loginSlice';
+import { logout, getRole } from '../login/loginSlice';
+import { UserRole } from '../../constants/Constants';
 
 const Navbar = () => {
   const dispatch = useDispatch();
-  const { isAuthenticated } = useSelector(state => state.login);
+  const { isAuthenticated, token } = useSelector(state => state.login);
+  const [userRole, setUserRole] = useState(UserRole.END_USER);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (token && isAuthenticated) {
+        const role = await dispatch(getRole(token));
+        if (role !== UserRole.END_USER) {
+          setUserRole(role);
+        }
+      }
+    };
+  
+    fetchData(); // Call the async function immediately
+  
+  }, [token, dispatch]);
+  
 
   return (
     <nav className="navbar">
