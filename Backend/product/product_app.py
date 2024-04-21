@@ -200,6 +200,12 @@ def get_product():
     return jsonify(product_schema.dump(p))
 
 
+@app.route('/products', methods='GET')
+def fetch_all_products():
+    p = Product.query.all()
+
+    return jsonify(products_schema.dump(p)), 200
+
 @app.route('/availability', methods=['GET'])
 def check_product_availability():
     product_id = request.json["product_id"]
