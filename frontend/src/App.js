@@ -7,6 +7,8 @@ import Login from './features/login/Login';
 import Analytics from './features/analytics/Analytics';
 import Dashboard from './features/dashboard/Dashboard';
 import Profile from './features/profile/Profile';
+import ProductPage from './features/productpage/ProductPage';
+
 import './App.css';
 
 function App() {
@@ -21,6 +23,7 @@ function App() {
           <Route path="/analytics" element={<Analytics />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/product/:productId"element={<ProductPage/>}> </Route>
         </Routes>
       </div>
     </Router>

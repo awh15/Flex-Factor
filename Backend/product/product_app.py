@@ -195,23 +195,39 @@ def change_product():
     return jsonify(product_schema.dump(p)), 200
 
 
-@app.route('/product', methods=['GET'])
-def get_product():
-    product = request.json["name"]
-
-    if not product:
-        abort(403)
-
-    p = Product.query.filter_by(name=product).first()
-
-    return jsonify(product_schema.dump(p))
-
-
+@app.route('/product/<product_id>', methods=['GET'])
+def get_product(product_id):
+    try: 
+        # Try to convert product_id to an integer
+        product_id = int(product_id)
+    except ValueError:
+        # If product_id is not a valid integer, return a 400 Bad Request error
+        return jsonify({'error': 'Invalid product ID'}), 400
+    
+    # Query the database for the product with the given ID
+    p = Product.query.filter_by(product_id=product_id).first()
+    
+    if p is None:
+        # If no product with the given ID is found, return a 404 Not Found error
+        return jsonify({'error': 'Product not found'}), 404
+    
+    # If everything is successful, return the product details
+    return jsonify(product_schema.dump(p)), 200
+ 
 @app.route('/products', methods=['GET'])
-def fetch_all_products():
-    p = Product.query.all()
+def get_all_products():
+    # Query all products from the database
+    products = Product.query.all()
+    
+    # If there are no products, return a 404 Not Found error
+    if not products:
+        return jsonify({'error': 'No products found'}), 404
+     
+    
+    # Return the list of products
+    return jsonify(products_schema.dump(products)), 200
 
-    return jsonify(products_schema.dump(p)), 200
+
 
 @app.route('/availability', methods=['GET'])
 def check_product_availability():
@@ -324,21 +340,10 @@ def post_faq():
     return jsonify(faq_schema.dump(f)), 201
 
 
-@app.route('/faq', methods=['GET'])
-def get_faq():
-    if "name" not in request.json:
-        abort(400)
+@app.route('/faq/<id>', methods=['GET'])
+def get_faq(id):  
 
-    product = request.json["name"]
-
-    p = Product.query.filter_by(name=product).first()
-
-    if not p:
-        abort(400)
-
-    p = p.product_id
-
-    f = FAQ.query.filter_by(product_id=p).all()
+    f = FAQ.query.filter_by(product_id=id).all()
 
     return jsonify(faqs_schema.dump(f)), 200
 

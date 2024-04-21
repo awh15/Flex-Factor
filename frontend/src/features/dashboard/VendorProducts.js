@@ -1,52 +1,50 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Grid, Box, Container, CardMedia, CardContent, Typography, CircularProgress, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
-import { getProducts, deleteProduct, addFaq } from './dashboardSlice'; // Import the getProducts and deleteProduct actions from the slice
+import { getProducts, deleteProduct, addFaq } from './dashboardSlice';
 
 const VendorProducts = ({ token }) => {
   const dispatch = useDispatch();
   const { vendorProductList, loading, error } = useSelector(state => state.dashboard);
   const [selectedProductId, setSelectedProductId] = useState(null);
-  const [openDialog, setOpenDialog] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [openFaqDialog, setOpenFaqDialog] = useState(false);
   const [faqQuestion, setFaqQuestion] = useState('');
   const [faqAnswer, setFaqAnswer] = useState('');
 
   useEffect(() => {
-    // Fetch the vendor products when the component mounts
     dispatch(getProducts(token));
   }, [dispatch, token]);
 
   const handleDeleteClick = (productId) => { 
     setSelectedProductId(productId);
-    setOpenDialog(true);
+    setOpenDeleteDialog(true);
   };
 
   const handleDeleteConfirm = () => {
     dispatch(deleteProduct({ token, productData: { product_id : selectedProductId } }));
-    setOpenDialog(false);
+    setOpenDeleteDialog(false);
   };
 
   const handleDeleteCancel = () => {
-    setSelectedProductId();
-    setOpenDialog(false);
+    setSelectedProductId(null);
+    setOpenDeleteDialog(false);
   };
 
   const handleAddFaq = (productId) => {
-    setSelectedProductId(productId)
-    setOpenDialog(true);
+    setSelectedProductId(productId);
+    setOpenFaqDialog(true);
   };
 
   const handleAddFaqSubmit = () => {
-    dispatch(addFaq({token, faqData : {question: faqQuestion, answer: faqAnswer, product_id: selectedProductId }}));
-    setOpenDialog(false);
-    // Optionally, you can clear the form fields here
+    dispatch(addFaq( {token, faqData: {question: faqQuestion, answer: faqAnswer, product_id: selectedProductId}} ));
+    setOpenFaqDialog(false);
     setFaqQuestion('');
     setFaqAnswer('');
   };
 
   return (
     <Container style={{ marginTop: '40px', display: 'flex', justifyContent: 'center' }}>
-        
       <Box width="80%" style={{paddingBottom: "20px"}}>
         <Typography variant="h3" style={{ marginTop: "20px", marginBottom: "40px", fontWeight: "bold" }} gutterBottom>
           My Products
@@ -62,7 +60,6 @@ const VendorProducts = ({ token }) => {
             {vendorProductList.map((product) => (
               <Grid item xs={12} sm={6} md={4} key={product.product_id}>
                 <Card style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                  {/* Delete button */}
                   <Button onClick={() => handleDeleteClick(product.product_id)} style={{ alignSelf: 'flex-end', margin: '5px' }}>X</Button>
                   <CardMedia
                     component="img"
@@ -81,7 +78,7 @@ const VendorProducts = ({ token }) => {
                         {product.description}
                       </Typography>
                       <Typography variant="body1">${product.price}</Typography>
-                      <Button fullWidth  style={{ backgroundColor: '#dc3416', color: '#ffffff', marginTop: '5px' }} onClick={() => handleAddFaq(product.product_id)}>Add FAQ</Button>
+                      <Button fullWidth  style={{ backgroundColor: '#dc3416', color: '#ffffff', marginTop: '5px' }} onClick={() => handleAddFaq(product.product_id)}>Edit FAQ</Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -90,7 +87,18 @@ const VendorProducts = ({ token }) => {
           </Grid>
         )}
       </Box> 
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+
+      {/* Delete confirmation dialog */}
+      <Dialog open={openDeleteDialog} onClose={handleDeleteCancel}>
+        <DialogTitle>Are you sure you want to delete this product?</DialogTitle>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel} color="primary">Cancel</Button>
+          <Button onClick={handleDeleteConfirm} color="primary">Delete</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* FAQ dialog */}
+      <Dialog open={openFaqDialog} onClose={() => setOpenFaqDialog(false)}>
         <DialogTitle>Add a frequently asked question and answer</DialogTitle>
         <DialogContent>
           <TextField
@@ -114,12 +122,8 @@ const VendorProducts = ({ token }) => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDialog(false)} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleAddFaqSubmit} color="primary">
-            Submit
-          </Button>
+          <Button onClick={() => setOpenFaqDialog(false)} color="primary">Cancel</Button>
+          <Button onClick={handleAddFaqSubmit} color="primary">Submit</Button>
         </DialogActions>
       </Dialog>
     </Container>
