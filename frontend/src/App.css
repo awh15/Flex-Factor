@@ -1,0 +1,14 @@
+:root {
+  --primary-color: #2ecc71; /* Green */
+  --secondary-color: #ff6348; /* Orange */
+  --accent-color: #ffffff; /* White */
+}
+
+body, button {
+  font-family: 'Poppins', sans-serif;
+}
+
+.button {
+  background-color: var(--secondary-color);
+  color: var(--accent-color);
+}

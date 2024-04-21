@@ -1,0 +1,58 @@
+:root {
+  --primary-color: #2ecc71; /* Green */
+  --secondary-color: #ff6348; /* Orange */
+  --dark-secondary-color: #d35400; /* Dark Orange */
+  --accent-color: #ffffff; /* White */
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px; /* Increased padding to make the navbar thicker */
+  background-color: var(--primary-color); /* Use primary color */
+  color: var(--accent-color); /* Use accent color */
+}
+
+.navbar__left {
+  display: flex;
+  align-items: center;
+}
+
+.navbar__logo {
+  font-size: 2rem;
+  font-weight: bold;
+  text-decoration: none; /* Remove underline */
+  color: var(--accent-color); /* Use accent color */
+}
+
+
+
+.navbar__right {
+  display: flex;
+}
+
+.navbar__button {
+  margin-left: 20px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  background-color: var(--secondary-color);
+  color: var(--accent-color);
+  cursor: pointer;
+  text-decoration: none; /* Remove underline */
+}
+
+
+.navbar__button:hover {
+  background-color: var(--secondary-color); /* Darken the secondary color on hover */
+}
+
+
+.navbar__button:hover {
+  background-color: var(--dark-secondary-color); /* Use dark orange on hover */
+}
+
+.navbar__logo:hover {
+  color: rgba(255, 255, 255, 0.8); /* Adjust alpha value for less opacity */
+}
