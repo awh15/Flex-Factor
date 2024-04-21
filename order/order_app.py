@@ -52,24 +52,60 @@ def create_token(user_id):
 
 @app.route('/order', methods=['POST'])
 def place_order():
-    if not("product_id" in request.json and "quantity" in request.json):
+    if not("product_id" in request.json and "quantity" in request.json and "date" in request.json):
         return {"Message": "Invalid request"}, 400
 
     token = extract_auth_token(request)
     try:
-        vendor_id = decode_token(token)
+        user_id = decode_token(token)
     except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
         abort(403)
 
     product_id = request.json["product_id"]
     quantity = request.json["quantity"]
+    date = request.json["date"]
 
+    response = requests.get(product_app_url+'availability', json={"id":product_id, "quantity": quantity}).json()
+
+    # Get the price
+    price = response["price"]
+
+    # Update product details
+    response = requests.get(product_app_url+'order_product', json={"id":product_id, "quantity": quantity})
+
+    # Set the order
+    if response.status_code == 200:
+        order = Order(user_id, price, date)
+
+        db.session.add(order)
+        db.session.commit()
+
+        return jsonify(order_schema.dump(order)), 201
     
+    else:
+        abort(400)
 
 
 @app.route('/cancel', methods=['POST'])
 def cancel_order():
-    pass
+    order_id = request.json["order_id"]
+
+    order = OrderDetail.query.filter_by(order_id=order_id).all()
+
+    if not order:
+        abort(404)
+
+    for o in order:
+        response = requests.post(product_app_url+'cancel_order', json={"id":o.product_id, "quantity": o.quantity})
+
+        if response.status_code != 200:
+            abort(400)
+
+        o.delete()
+
+    Order.query.filter_by(id=order_id).delete()
+
+    return {"Message": "Order cancelled"}, 200
 
 
 @app.route('/order', methods=['GET'])

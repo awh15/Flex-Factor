@@ -13,7 +13,7 @@ import requests
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = DB_CONFIG+'product'
+app.config['SQLALCHEMY_DATABASE_URI'] = DB_CONFIG
 CORS(app)
 ma = Marshmallow(app)
 db = SQLAlchemy(app)
@@ -198,6 +198,50 @@ def get_product():
     p = Product.query.filter_by(name=product).first()
 
     return jsonify(product_schema.dump(p))
+
+
+@app.route('/availability', methods=['GET'])
+def check_product_availability():
+    product_id = request.json["product_id"]
+    quantity = request.json["quantity"]
+
+    product = Product.query.filter_by(id=product_id).first()
+
+    if product.stock >= quantity:
+        price = product.price * quantity
+
+        return {"price": price}, 200
+    
+    else:
+        return {"Not enough stock"}, 400
+
+
+@app.route('/order_product', methods=['POST'])
+def order_product():
+    product_id = request.json["product_id"]
+    quantity = request.json["quantity"]
+
+    product = Product.query.filter_by(id=product_id).first()
+
+    product.stock -= quantity
+
+    db.session.commit()
+
+    return {"Message": "Order confirmed"}, 200
+
+
+@app.route('/cancel_order', methods=['POST'])
+def cancel_order():
+    product_id = request.json["product_id"]
+    quantity = request.json["quantity"]
+
+    product = Product.query.filter_by(id=product_id).first()
+
+    product.stock += quantity
+
+    db.session.commit()
+
+    return {"Message": "Order cancelled"}, 200
 
 
 @app.route('/list', methods=['GET'])
