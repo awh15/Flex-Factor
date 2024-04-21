@@ -9,7 +9,7 @@ export const login = createAsyncThunk(
   async (credentials, { dispatch }) => {
     try {
       const response = await axios.post(`${USER_BASE_URL}/login`, credentials);
-      dispatch(getRole()); // Dispatch getRole thunk after successful login
+      await dispatch(getRole()); // Dispatch getRole thunk after successful login
       return response.data; // Assuming the backend sends back the user data including token
     } catch (error) {
       if (error.response && error.response.data && error.response.data.Message) {
@@ -33,28 +33,42 @@ export const getAuth = createAsyncThunk(
     return token;
   }
 );
-
+ 
 // Async thunk to fetch user role
 export const getRole = createAsyncThunk(
   'login/getRole',
   async (_, { getState }) => {
-    const token = getState().login.token;
+    const token = localStorage.getItem('token');
+    if (!token) {
+      return UserRole.END_USER;
+    }
+
     const config = {
       headers: {
-        Authorization: `Bearer ${token}`
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json" // Add Content-Type header
       }
     };
-    const response = await axios.get(`${USER_BASE_URL}/get_role`, config);
-    const role = response.data.role;
-    if(role === "End User"){
-      return UserRole.END_USER;
-    }else if(role === "Admin"){
-      return UserRole.ADMIN;
-    }else{
-      return UserRole.VENDOR;
-    } 
+
+    try {
+      const response = await axios.get(`${USER_BASE_URL}get_role`, config);
+      const role = response.data.role;
+      
+      if (role === "End User") {
+        return UserRole.END_USER;
+      } else if (role === "Admin") {
+        return UserRole.ADMIN;
+      } else {
+        return UserRole.VENDOR;
+      }
+    } catch (error) {
+      console.error("Error fetching user role:", error);
+      // Handle error, e.g., return a default role or rethrow the error
+      throw error;
+    }
   }
 );
+
 
 
 // Slice

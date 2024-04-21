@@ -14,7 +14,7 @@ const Navbar = () => {
   useEffect(() => {
     const fetchData = async () => {
       if (token && isAuthenticated) {
-        const role = await dispatch(getRole(token));
+        const role = await dispatch(getRole());
         if (role !== UserRole.END_USER) {
           setUserRole(role);
         }
