@@ -1,0 +1,22 @@
+.animated-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, #ff7e5f, #000000); /* Initial gradient */
+    animation: gradientAnimation 1s ; /* Animation properties */
+  }
+  
+  @keyframes gradientAnimation {
+    0% {
+      background-position: 0% 50%; /* Initial background position */
+    }
+    50% {
+      background-position: 100% 50%; /* Final background position */
+    }
+    100% {
+      background-position: 0% 50%; /* Reset to initial position */
+    }
+  }
+  

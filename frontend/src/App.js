@@ -1,19 +1,11 @@
 import React from 'react'; 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; // Changed to BrowserRouter
 import Navbar from './features/navbar/Navbar';
-import './App.css'; // Import the CSS file
-
-function Home() {
-  return <h1>Welcome to Flex Factor</h1>;
-}
-
-function Login() {
-  return <h1>Login Page</h1>;
-}
-
-function SignUp() {
-  return <h1>Sign Up Page</h1>;
-}
+import HomePage from './features/homepage/HomePage';
+import SignUp from './features/signup/Signup';
+import './App.css';    
+import Login from './features/login/Login';
+ 
 
 function App() {
   return (
@@ -21,7 +13,7 @@ function App() {
       <div className='App'>
         <Navbar />
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
         </Routes>

@@ -1,0 +1,105 @@
+{
+    "fetchAllProducts": [
+      {
+        "product_id": 1,
+        "vendor_id": 2,
+        "name": "Adjustable Weight Bench",
+        "description": "This versatile weight bench allows you to perform a variety of exercises for your chest, back, shoulders, and core.",
+        "price": 299.99,
+        "stock_quantity": 10,
+        "category": "Strength Training",
+        "image_url": "https://m.media-amazon.com/images/I/71dCvGuqGWL._AC_SL1500_.jpg"
+      },
+      {
+        "product_id": 2,
+        "vendor_id": 3,
+        "name": "Olympic Barbell",
+        "description": "A must-have for any weightlifter, this barbell is perfect for squats, deadlifts, bench presses, and more.",
+        "price": 349.99,
+        "stock_quantity": 8,
+        "category": "Weightlifting",
+        "image_url": "https://cdn-live.powerhouse-fitness.co.uk/pictures/bodymax/barbells/WTBC0214/hero_compettition_bar1_1600.jpg"
+      },
+      {
+        "product_id": 3,
+        "vendor_id": 1,
+        "name": "Set of Dumbbells",
+        "description": "This set of dumbbells is perfect for a variety of exercises, including bicep curls, tricep extensions, lunges, and more.",
+        "price": 99.99,
+        "stock_quantity": 15,
+        "category": "Free Weights",
+        "image_url": "https://cdn-live.powerhouse-fitness.co.uk/pictures/bodymax/dumbbells/GRP0150002/hammertone_kit_generic_2_1_1_1_1600_1600.jpg"
+      },
+      {
+        "product_id": 4,
+        "vendor_id": 2,
+        "name": "Treadmill",
+        "description": "This treadmill is a great way to improve your cardiovascular health and burn calories.",
+        "price": 1299.99,
+        "stock_quantity": 5,
+        "category": "Cardio",
+        "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTimllLjBK_GqzgmgsGu78f18PXsnMKH9fZ6ResDeAYiA&s"
+      },
+      {
+        "product_id": 5,
+        "vendor_id": 1,
+        "name": "Exercise Bike",
+        "description": "This exercise bike is a low-impact way to get a great workout.",
+        "price": 599.99,
+        "stock_quantity": 7,
+        "category": "Cardio",
+        "image_url": "https://m.media-amazon.com/images/I/71ikEqEK3HL.jpg"
+      },
+      {
+        "product_id": 6,
+        "vendor_id": 2,
+        "name": "Adjustable Weight Bench",
+        "description": "This versatile weight bench allows you to perform a variety of exercises for your chest, back, shoulders, and core.",
+        "price": 299.99,
+        "stock_quantity": 10,
+        "category": "Strength Training",
+        "image_url": "https://m.media-amazon.com/images/I/71dCvGuqGWL._AC_SL1500_.jpg"
+      },
+      {
+        "product_id": 7,
+        "vendor_id": 3,
+        "name": "Olympic Barbell",
+        "description": "A must-have for any weightlifter, this barbell is perfect for squats, deadlifts, bench presses, and more.",
+        "price": 349.99,
+        "stock_quantity": 8,
+        "category": "Weightlifting",
+        "image_url": "https://cdn-live.powerhouse-fitness.co.uk/pictures/bodymax/barbells/WTBC0214/hero_compettition_bar1_1600.jpg"
+      },
+      {
+        "product_id": 8,
+        "vendor_id": 1,
+        "name": "Set of Dumbbells",
+        "description": "This set of dumbbells is perfect for a variety of exercises, including bicep curls, tricep extensions, lunges, and more.",
+        "price": 99.99,
+        "stock_quantity": 15,
+        "category": "Free Weights",
+        "image_url": "https://cdn-live.powerhouse-fitness.co.uk/pictures/bodymax/dumbbells/GRP0150002/hammertone_kit_generic_2_1_1_1_1600_1600.jpg"
+      },
+      {
+        "product_id": 9,
+        "vendor_id": 2,
+        "name": "Treadmill",
+        "description": "This treadmill is a great way to improve your cardiovascular health and burn calories.",
+        "price": 1299.99,
+        "stock_quantity": 5,
+        "category": "Cardio",
+        "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTimllLjBK_GqzgmgsGu78f18PXsnMKH9fZ6ResDeAYiA&s"
+      },
+      {
+        "product_id": 10,
+        "vendor_id": 1,
+        "name": "Exercise Bike",
+        "description": "This exercise bike is a low-impact way to get a great workout.",
+        "price": 599.99,
+        "stock_quantity": 7,
+        "category": "Cardio",
+        "image_url": "https://m.media-amazon.com/images/I/71ikEqEK3HL.jpg"
+      }
+    ]
+  }
+  
