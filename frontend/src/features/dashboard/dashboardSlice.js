@@ -15,7 +15,7 @@ export const addFaq = createAsyncThunk(
       console.log(response);
       return response.data;
     } catch (error) {
-      throw new Error(error.response ? error.response.data : "An unexpected error occurred while adding faq");
+      throw new Error(error.response ? error.response.data : "An unexpected error occurred while adding faq!");
     }
   }
 );
