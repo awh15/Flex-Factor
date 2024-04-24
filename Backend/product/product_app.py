@@ -383,6 +383,30 @@ def delete_faq():
 
     return {"message": "deleted FAQ"}, 200
 
+# route to get all products of a vendor given vendor_id
+@app.route("/vendor_products", methods=['POST'])
+def vendor_products():
+    token = extract_auth_token(request)
+    try:
+        admin_id = decode_token(token)
+    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
+        abort(403)
+        
+    header = {
+        "Authorization": "Bearer " + token
+    }
+    response = requests.get(user_app_url+'get_role', headers = header)
+    
+    if response.json()["role"] != "Admin":
+        abort(400)
+        
+    if ("vendor_id" not in request.json):
+        abort(400)
+        
+    p = Product.query.filter_by(vendor_id=request.json["vendor_id"]).all()
+    
+    return jsonify(products_schema.dump(p))
+
 
 with app.app_context():
     db.create_all()
