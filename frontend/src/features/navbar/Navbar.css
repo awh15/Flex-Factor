@@ -44,7 +44,7 @@
 }
 
 .navbar__button:hover {
-  background-color: var(--dark-secondary-color);
+  background-color: #ffcccc; /* very light red */
 }
 
 .navbar__logo {
