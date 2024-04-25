@@ -1,4 +1,4 @@
-from ...app import db, ma, bcrypt
+from .payment_app import db, ma, bcrypt
 import datetime
 
 '''

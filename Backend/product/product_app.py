@@ -200,7 +200,7 @@ def get_product():
     return jsonify(product_schema.dump(p))
 
 
-@app.route('/products', methods='GET')
+@app.route('/products', methods=['GET'])
 def fetch_all_products():
     p = Product.query.all()
 
