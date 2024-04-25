@@ -61,7 +61,7 @@ def search():
     return jsonify(products_schema.dump(s))
 
 
-@app.route('/add', methods=['POST'])
+@app.route('/add', methods=["POST"])
 def add_product():
     if not ("name" in request.json and
             "description" in request.json and
@@ -84,8 +84,12 @@ def add_product():
     category = request.json["category"]
     image = request.json["image"]
     
+    headers = {
+    'Authorization': 'Bearer ' + token,
+    'Content-Type': 'application/json'
+    }
     # Check if profile is a vendor
-    response = requests.get(user_app_url+'get_role', json={"id":vendor_id})
+    response = requests.get(user_app_url + 'get_role', headers=headers)
 
     if response.status_code == 400:
         abort(400)
@@ -112,7 +116,10 @@ def delete_product():
         abort(403)
     product_id = request.json["product_id"]
     
-    response = requests.get(user_app_url+'get_role', json={"id":vendor_id})
+    header = {
+        "Authorization": "Bearer "+token
+    }
+    response = requests.get(user_app_url+'get_role', headers=header)
     
     if not response:
         abort(400)
@@ -200,7 +207,7 @@ def get_product():
     return jsonify(product_schema.dump(p))
 
 
-@app.route('/products', methods=['GET'])
+@app.route('/products', methods='GET')
 def fetch_all_products():
     p = Product.query.all()
 
@@ -258,8 +265,10 @@ def get_products_list():
         vendor_id = decode_token(token)
     except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
         abort(403)
-
-    response = requests.get(user_app_url+'get_role', json={"id": vendor_id})
+    header = {
+        "Authorization": 'Bearer '+token
+    }
+    response = requests.get(user_app_url+'get_role', headers=header)
 
     if response.json()["role"] != "Vendor":
         abort(400)
@@ -278,20 +287,23 @@ def post_faq():
     except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
         abort(403)
 
-    response = requests.get(user_app_url+'get_role', json={"id": vendor_id})
+    header = {
+        "Authorization": "Bearer " + token
+    }
+    response = requests.get(user_app_url+'get_role', headers = header)
 
     # Only Vendor can set FAQs
     if response.json()["role"] != "Vendor":
         abort(400)
         
-    if ("question" not in request.json and "answer" not in request.json and "product" not in request.json):
+    if ("question" not in request.json and "answer" not in request.json and "product_id" not in request.json):
         abort(400)
 
     question = request.json["question"]
     answer = request.json["answer"]
-    product = request.json["product"]
+    product_id = request.json["product_id"]
     
-    p = Product.query.filter_by(name=product).first()
+    p = Product.query.filter_by(product_id=product_id).first()
 
     if not p:
         abort(400)
@@ -312,21 +324,10 @@ def post_faq():
     return jsonify(faq_schema.dump(f)), 201
 
 
-@app.route('/faq', methods=['GET'])
-def get_faq():
-    if "name" not in request.json:
-        abort(400)
+@app.route('/faq/<id>', methods=['GET'])
+def get_faq(id):  
 
-    product = request.json["name"]
-
-    p = Product.query.filter_by(name=product).first()
-
-    if not p:
-        abort(400)
-
-    p = p.product_id
-
-    f = FAQ.query.filter_by(product_id=p).all()
+    f = FAQ.query.filter_by(product_id=id).all()
 
     return jsonify(faqs_schema.dump(f)), 200
 
@@ -365,6 +366,30 @@ def delete_faq():
     db.session.commit()
 
     return {"message": "deleted FAQ"}, 200
+
+# route to get all products of a vendor given vendor_id
+@app.route("/vendor_products", methods=['POST'])
+def vendor_products():
+    token = extract_auth_token(request)
+    try:
+        admin_id = decode_token(token)
+    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
+        abort(403)
+        
+    header = {
+        "Authorization": "Bearer " + token
+    }
+    response = requests.get(user_app_url+'get_role', headers = header)
+    
+    if response.json()["role"] != "Admin":
+        abort(400)
+        
+    if ("vendor_id" not in request.json):
+        abort(400)
+        
+    p = Product.query.filter_by(vendor_id=request.json["vendor_id"]).all()
+    
+    return jsonify(products_schema.dump(p))
 
 
 with app.app_context():

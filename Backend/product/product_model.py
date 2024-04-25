@@ -16,11 +16,11 @@ class Product(db.Model):
     product_id = db.Column(db.Integer, primary_key=True)
     vendor_id = db.Column(db.Integer, nullable=False)
     name = db.Column(db.String(50))
-    description = db.Column(db.Text)
+    description = db.Column(db.String(1000))
     price = db.Column(db.Numeric(10, 2))
     stock_quantity = db.Column(db.Integer)
     category = db.Column(db.String(30))
-    image_url = db.Column(db.String(100))
+    image_url = db.Column(db.String(1000))
     rating = db.Column(db.Float)
 
     def __init__(self, vendor_id, name, description, price, stock_quantity, category, image_url, rating):

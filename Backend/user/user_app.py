@@ -18,7 +18,7 @@ ma = Marshmallow(app)
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 
-from .user_model import User, user_schema, UserRole
+from .user_model import User, user_schema, users_schema, UserRole
 
 profile_app_url = 'http://localhost:5050/'
 
@@ -114,9 +114,7 @@ def login():
 
 
 @app.route("/get_role", methods=["GET"])
-def get_role(): 
-    user_id = None 
-     
+def get_role():  
     token = extract_auth_token(request)
     try:
         user_id = decode_token(token)
@@ -129,6 +127,68 @@ def get_role():
         abort(404)
         
     return jsonify({"role": u.role.value}), 200
+
+# route to return list of vendors to admin
+@app.route("/get_vendors", methods=["GET"])
+def get_vendors(): 
+    token = extract_auth_token(request)
+    try:
+        admin_id = decode_token(token)
+    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
+        abort(403)
+    
+    u = User.query.filter_by(user_id=admin_id).first()
+    
+    if u.role.value != "Admin":
+        abort(403)
+    
+    vendors = User.query.filter_by(role=UserRole.VENDOR.name).all()
+    return jsonify(users_schema.dump(vendors))
+
+
+# route to return list of users to admin
+@app.route("/get_users", methods=["GET"])
+def get_users(): 
+    token = extract_auth_token(request)
+    try:
+        admin_id = decode_token(token)
+    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
+        abort(403)
+    
+    u = User.query.filter_by(user_id=admin_id).first()
+    
+    if u.role.value != "Admin":
+        abort(403)
+    
+    users = User.query.filter_by(role=UserRole.END_USER.name).all()
+    return jsonify(users_schema.dump(users))
+
+
+@app.route("/delete_user", methods=["POST"])
+def delete_user():
+    token = extract_auth_token(request)
+    try:
+        admin_id = decode_token(token)
+    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
+        abort(403)
+    
+    u = User.query.filter_by(user_id=admin_id).first()
+    
+    if u.role.value != "Admin":
+        abort(403)
+        
+    if ("user_id" not in request.json):
+        abort(400)
+        
+    u = User.query.filter_by(user_id=request.json["user_id"]).first()
+    
+    if not u:
+        abort(400)
+        
+    db.session.delete(u)
+    db.session.commit()
+    
+    return {"Message" : "User successfully deleted"}
 
 
 with app.app_context():

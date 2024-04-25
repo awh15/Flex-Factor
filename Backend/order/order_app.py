@@ -10,6 +10,9 @@ from ..db_config import DB_CONFIG
 from ..secret_key import SECRET_KEY
 import jwt
 import requests
+import string 
+import random
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -21,8 +24,10 @@ bcrypt = Bcrypt(app)
 
 from .order_model import Order, order_schema, orders_schema
 from .orderDetail_model import OrderDetail, order_detail_schema
+from .coupon_model import Coupon, coupon_schema
 
 product_app_url = 'http://localhost:5100/'
+user_app_url = 'http://localhost:5001/'
 
 def extract_auth_token(authenticated_request):
     auth_header = authenticated_request.headers.get('Authorization')
@@ -69,6 +74,14 @@ def place_order():
 
     # Get the price
     price = response["price"]
+
+    # Check for discount
+    if "discount_code" in request.json:
+        code=request.json["discount_code"]
+        if isinstance(code, str) and code.isalnum() and len(code)==8:
+            coupon = Coupon.query.filter_by(code=code).first()
+            if coupon and coupon.expiry_date >= datetime.now() and coupon.usage_limit:
+                price=price*(1-coupon.percentage/100)
 
     # Update product details
     response = requests.get(product_app_url+'order_product', json={"id":product_id, "quantity": quantity})
@@ -119,6 +132,63 @@ def get_order():
     o = Order.query.filter_by(user_id=user_id).all()
     return jsonify(orders_schema.dump(o))
 
+@app.route('/generate_coupon', methods=['POST'])
+def generate_coupon():
+    token = extract_auth_token(request)
+    try:
+        user_id = decode_token(token)
+    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
+        abort(403)
 
+    u = requests.get(user_app_url+'get_role', json={'id':user_id})
+
+    if u.status_code == 400 or u.json()["role"] != "Admin":
+        abort(400)
+
+    if not("discount_percentage" in request.json and "expiry_date" in request.json and "usage_limit" in request.json):
+        return {"Message": "Invalid request"}, 400
+
+    percentage = request.json["discount_percentage"]
+    expiry = request.json["expiry_date"]
+    limit = request.json["usage_limit"]
+
+    try:
+        expiry = datetime.strptime(expiry, "%Y-%m-%d")
+    except ValueError:
+        abort(400)
+
+    if not (isinstance(percentage, int) and 1<=percentage<=100 and isinstance(limit, int) and limit>0):
+        abort(400)
+
+    while True:
+        rand_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+
+        if not Coupon.query.filter_by(code=rand_code).all():
+            break
+    
+    coupon = Coupon(rand_code, percentage, expiry, limit)
+
+    db.session.add(coupon)
+    db.session.commit()
+
+    return {"code":rand_code}
+
+@app.route("/coupon_validity", methods=['POST'])
+def coupon_validity():
+    if not "code" in request.json :
+        return {"Message": "Invalid request"}, 400
+    code = request.json["code"]
+    if not(isinstance(code, str) and code.isalnum() and len(code)==8):
+        return {"Message": "Invalid request"}, 400
+
+    code=code.upper()
+
+    coupon = Coupon.query.filter_by(code=code).first()
+    if coupon and coupon.expiry_date >= datetime.now() and coupon.usage_limit:
+        return {"validity":"valid", "discount_percentage":coupon.discount_percentage}
+    else:
+        return {"validity":"invalid", "discount_percentage":0}
+
+        
 with app.app_context():
     db.create_all()

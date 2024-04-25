@@ -37,3 +37,4 @@ class UserSchema(ma.Schema):
         model = User
 
 user_schema = UserSchema()
+users_schema = UserSchema(many=True)
